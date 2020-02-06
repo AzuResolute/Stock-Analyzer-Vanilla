@@ -28,7 +28,29 @@ let dateToTable = data => {
 };
 
 let getAllDaily = () => {
-  fetch("http://localhost:4567/getStock")
+  fetch("http://localhost:4567/getDaily")
+    .then(response => {
+      return response.json();
+    })
+    .then(myJson => {
+      //console.log(myJson);
+      return displayTable(myJson);
+    });
+};
+
+let getAllWeekly = () => {
+  fetch("http://localhost:4567/getWeekly")
+    .then(response => {
+      return response.json();
+    })
+    .then(myJson => {
+      //console.log(myJson);
+      return displayTable(myJson);
+    });
+};
+
+let getAllIntraday = () => {
+  fetch("http://localhost:4567/getIntraday")
     .then(response => {
       return response.json();
     })
