@@ -1,8 +1,7 @@
 let displayTable = data => {
   console.log(data);
+  
   let mainDataKey = Object.keys(data)[1];
-  console.log(mainDataKey);
-  debugger;
   dateToTable(data[mainDataKey]);
   changeTitle(data["Meta Data"]["1. Information"]);
 };
@@ -27,7 +26,8 @@ let dateToTable = data => {
     )
     .join("");
 };
-let sendCall = () => {
+
+let getAllDaily = () => {
   fetch("http://localhost:4567/getStock")
     .then(response => {
       return response.json();

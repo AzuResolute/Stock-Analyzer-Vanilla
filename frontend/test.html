@@ -62,17 +62,16 @@
   </style>
   <head>
     <meta charset="utf-8" />
-
     <title>Stock Analyzer</title>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
     <script src="GetData.js"></script>
   </head>
 
   <body>
     <nav>
-      <button onclick="sendCall()">Click me</button>
+      <button disabled>Intraday</button>
+      <button onclick="getAllDaily()">Daily</button>
+      <button disabled>Weekly</button>
     </nav>
     <h2 id="parameter">No Data Selected</h2>
     <table class="blueTable">
