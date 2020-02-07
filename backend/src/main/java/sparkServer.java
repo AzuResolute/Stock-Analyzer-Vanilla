@@ -28,6 +28,18 @@ public class sparkServer {
                 }
         );
 
+        get("/getWeekly/:week", (req, res) -> {
+                    getStock gs = new getStock();
+                    //return new Gson().toJson(gs.sendGet());
+                    String result = gs.getWeekly();
+                    String week = req.params(":week");
+                    System.out.println("Week Selected: " + week);
+
+                    System.out.println(result);
+                    return result;
+                }
+        );
+
         get("/getIntraday", (req, res) -> {
                     getStock gs = new getStock();
                     //return new Gson().toJson(gs.sendGet());

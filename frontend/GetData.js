@@ -33,7 +33,6 @@ let getAllDaily = () => {
       return response.json();
     })
     .then(myJson => {
-      //console.log(myJson);
       return displayTable(myJson);
     });
 };
@@ -44,7 +43,16 @@ let getAllWeekly = () => {
       return response.json();
     })
     .then(myJson => {
-      //console.log(myJson);
+      return displayTable(myJson);
+    });
+};
+
+let getSingleWeekly = week => {
+  fetch(`http://localhost:4567/getWeekly/${week}`)
+    .then(response => {
+      return response.json();
+    })
+    .then(myJson => {
       return displayTable(myJson);
     });
 };
@@ -55,7 +63,6 @@ let getAllIntraday = () => {
       return response.json();
     })
     .then(myJson => {
-      //console.log(myJson);
       return displayTable(myJson);
     });
 };
