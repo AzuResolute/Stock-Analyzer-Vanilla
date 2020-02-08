@@ -1,12 +1,14 @@
 let displayTable = data => {
   console.log(data);
   
-  if(data instanceof Object){
+  if(typeof data === 'string'){
+    console.log("csv path")
+    csvToTable(data)
+  } else {
+    console.log("json path")
     let mainDataKey = Object.keys(data)[1];
     jsonToTable(data[mainDataKey]);
     changeTitle(data["Meta Data"]["1. Information"]);
-  } else {
-
   }
 };
 
@@ -17,29 +19,47 @@ let changeTitle = title => {
 let jsonToTable = data => {
   let resultTable = document.getElementById("results");
   resultTable.innerHTML = Object.entries(data)
-    .map(
-      w =>
-        `<tr key=${w[0]}>
-            <td>${w[0]}</td>
-            <td>${Number(w[1]["1. open"]).toFixed(2)}</td>
-            <td>${Number(w[1]["2. high"]).toFixed(2)}</td>
-            <td>${Number(w[1]["3. low"]).toFixed(2)}</td>
-            <td>${Number(w[1]["4. close"]).toFixed(2)}</td>
-            <td>${Number(w[1]["5. volume"]).toLocaleString()}</td>
-        </tr>`
+    .map(w =>
+      `<tr key=${w[0]}>
+          <td>${w[0]}</td>
+          <td>${Number(w[1]["1. open"]).toFixed(2)}</td>
+          <td>${Number(w[1]["2. high"]).toFixed(2)}</td>
+          <td>${Number(w[1]["3. low"]).toFixed(2)}</td>
+          <td>${Number(w[1]["4. close"]).toFixed(2)}</td>
+          <td>${Number(w[1]["5. volume"]).toLocaleString()}</td>
+      </tr>`
     ).join("");
 };
+
+let csvToTable = data => {
+  let resultTable = document.getElementById("results");
+  resultTable.innerHTML = data.split('\n')
+    .map(w => {
+        let x = w.split(/,\s/);
+        return `<tr key=${x[0]}>
+            <td>${x[0]}</td>
+            <td>${Number(x[1]).toFixed(2)}</td>
+            <td>${Number(x[2]).toFixed(2)}</td>
+            <td>${Number(x[3]).toFixed(2)}</td>
+            <td>${Number(x[4]).toFixed(2)}</td>
+            <td>${Number(x[5]).toLocaleString()}</td>
+        </tr>`;
+      }
+    ).join("");
+  };
 
 let renderDateInput = datetype => {
   let userinput = document.querySelector("#userinput")
   userinput.innerHTML =
   `Day Of Stock:
-  <input type="date" name="week">
+  <input type="date" name="selectedDate">
   <input type="submit">`;
   userinput.addEventListener('submit', e => {
     e.preventDefault();
     if(datetype === "weekly") {
-      console.log(e.target.children[0].value);
+      getSingleWeekly(e.target.selectedDate.value);
+    } else if (datatype === 'daily') {
+      // getSingleDaily(e.target.selectedDate.value);
     }
   });
 };
@@ -65,21 +85,21 @@ let getAllDaily = () => {
 
 let getAllWeekly = () => {
   fetch("http://localhost:4567/getWeekly")
-    .then(response => {
-      return response.json();
-    })
-    .then(myJson => {
-      return displayTable(myJson);
-    });
+  .then(response => {
+    return response.text();
+  })
+  .then(csv => {
+    return displayTable(csv);
+  });
 };
 
 let getSingleWeekly = weekly => {
   fetch(`http://localhost:4567/getWeekly/${weekly}`)
     .then(response => {
-      return response;
+      return response.text();
     })
-    .then(response => {
-      console.log(response);
+    .then(csv => {
+      return displayTable(csv);
     });
 };
 

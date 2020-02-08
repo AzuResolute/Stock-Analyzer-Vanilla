@@ -10,6 +10,7 @@ import java.net.http.HttpResponse;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,15 +28,8 @@ public class sparkServer {
             System.err.println("wrong path");
         }
 
-        get("/getDaily", (req, res) -> {
-                    String result = new getStock().getDaily();
-                    System.out.println(result);
-                    return result;
-                }
-        );
-
         get("/getWeekly", (req, res) -> {
-                    String result = new getStock().getWeekly();
+                    String result = String.join("\n", new Seed().WEEKLYSTRINGIFIED);
                     System.out.println(result);
                     return result;
                 }
@@ -52,19 +46,19 @@ public class sparkServer {
                 }
         );
 
-        get("/getIntraday", (req, res) -> {
-                    String result = new getStock().getIntraday();
-                    System.out.println(result);
-                    return result;
-                }
-        );
-
         get("/getIntraday/:minute", (req, res) -> {
                     getStock gs = new getStock();
                     String minute = req.params(":minute");
                     System.out.println("Minute Selected: " + minute);
                     String[] stringifiedArray = new Seed().INTRADAYSTRINGIFIED;
                     String result = Stream.of(stringifiedArray).filter(m -> m.contains(minute)).findFirst().get();
+                    System.out.println(result);
+                    return result;
+                }
+        );
+
+        get("/getDaily", (req, res) -> {
+                    String result = new getStock().getDaily();
                     System.out.println(result);
                     return result;
                 }
@@ -78,4 +72,19 @@ public class sparkServer {
     }
 
 
+//  GET JSON
+//
+//        get("/getWeekly", (req, res) -> {
+//                    String result = new getStock().getWeekly();
+//                    System.out.println(result);
+//                    return result;
+//                }
+//        );
+//
+//        get("/getIntraday", (req, res) -> {
+//                    String result = new getStock().getIntraday();
+//                    System.out.println(result);
+//                    return result;
+//                }
+//        );
 }
