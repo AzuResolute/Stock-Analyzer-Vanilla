@@ -54,33 +54,29 @@ let renderDateInput = datetype => {
   `Day Of Stock:
   <input type="date" name="selectedDate">
   <input type="submit">`;
+  // Create min/max
   userinput.addEventListener('submit', e => {
     e.preventDefault();
     if(datetype === "weekly") {
       getSingleWeekly(e.target.selectedDate.value);
-    } else if (datatype === 'daily') {
-      // getSingleDaily(e.target.selectedDate.value);
+    } else if (datetype === 'daily') {
+      getSingleDaily(e.target.selectedDate.value);
     }
   });
 };
 
 let renderDateTimeInput = () => {
-  document.querySelector("#userinput").innerHTML =
+  let userinput = document.querySelector("#userinput")
+  userinput.innerHTML =
   `Day Of Stock:
-  <input type="datetime-local" name="input">
+  <input type="datetime-local" name="selectedDateTime">
   <input type="submit">`;
-
-};
-
-
-let getAllDaily = () => {
-  fetch("http://localhost:4567/getDaily")
-    .then(response => {
-      return response.json();
-    })
-    .then(myJson => {
-      return displayTable(myJson);
-    });
+    // Create min/max
+  userinput.addEventListener('submit', e => {
+    e.preventDefault();
+    console.log(`${e.target.selectedDateTime.value.replace("T"," ")}:00`)
+    getSingleIntraday(`${e.target.selectedDateTime.value.replace("T"," ")}:00`);
+  });
 };
 
 let getAllWeekly = () => {
@@ -93,8 +89,28 @@ let getAllWeekly = () => {
   });
 };
 
-let getSingleWeekly = weekly => {
-  fetch(`http://localhost:4567/getWeekly/${weekly}`)
+let getSingleWeekly = week => {
+  fetch(`http://localhost:4567/getWeekly/${week}`)
+    .then(response => {
+      return response.text();
+    })
+    .then(csv => {
+      return displayTable(csv);
+    });
+};
+
+let getAllDaily = () => {
+  fetch("http://localhost:4567/getDaily")
+    .then(response => {
+      return response.text();
+    })
+    .then(csv => {
+      return displayTable(csv);
+    });
+};
+
+let getSingleDaily = day => {
+  fetch(`http://localhost:4567/getDaily/${day}`)
     .then(response => {
       return response.text();
     })
@@ -106,19 +122,32 @@ let getSingleWeekly = weekly => {
 let getAllIntraday = () => {
   fetch("http://localhost:4567/getIntraday")
     .then(response => {
-      return response.json();
+      return response.text();
     })
-    .then(myJson => {
-      return displayTable(myJson);
+    .then(csv => {
+      return displayTable(csv);
     });
 };
 
 let getSingleIntraday = minute => {
   fetch(`http://localhost:4567/getIntraday/${minute}`)
     .then(response => {
-      return response.json();
+      return response.text();
     })
-    .then(myJson => {
-      return displayTable(myJson);
+    .then(csv => {
+      return displayTable(csv);
     });
 };
+
+
+// GET JSON
+
+// let getAllDaily = () => {
+//   fetch("http://localhost:4567/getDaily")
+//     .then(response => {
+//       return response.json();
+//     })
+//     .then(myJson => {
+//       return displayTable(myJson);
+//     });
+// };

@@ -35,6 +35,21 @@ public class sparkServer {
                 }
         );
 
+        get("/getDaily", (req, res) -> {
+                    String result = String.join("\n", new Seed().DAILYLYSTRINGIFIED);
+                    System.out.println(result);
+                    return result;
+                }
+        );
+
+        get("/getIntraday", (req, res) -> {
+                    String result = String.join("\n", new Seed().INTRADAYSTRINGIFIED);
+                    System.out.println(result);
+                    return result;
+                }
+        );
+
+
         get("/getWeekly/:week", (req, res) -> {
                     getStock gs = new getStock();
                     String week = req.params(":week");
@@ -46,19 +61,23 @@ public class sparkServer {
                 }
         );
 
+        get("/getDaily/:day", (req, res) -> {
+                    getStock gs = new getStock();
+                    String day = req.params(":day");
+                    System.out.println("Week Selected: " + day);
+                    String[] stringifiedArray = new Seed().DAILYLYSTRINGIFIED;
+                    String result = Stream.of(stringifiedArray).filter(w -> w.contains(day)).findFirst().get();
+                    System.out.println(result);
+                    return result;
+                }
+        );
+
         get("/getIntraday/:minute", (req, res) -> {
                     getStock gs = new getStock();
                     String minute = req.params(":minute");
                     System.out.println("Minute Selected: " + minute);
                     String[] stringifiedArray = new Seed().INTRADAYSTRINGIFIED;
                     String result = Stream.of(stringifiedArray).filter(m -> m.contains(minute)).findFirst().get();
-                    System.out.println(result);
-                    return result;
-                }
-        );
-
-        get("/getDaily", (req, res) -> {
-                    String result = new getStock().getDaily();
                     System.out.println(result);
                     return result;
                 }
