@@ -18,11 +18,9 @@ import java.util.stream.Stream;
 public class sparkServer {
     public static void main(String [] args){
 
-        String aburl = "C:\\Users\\roger\\Documents\\Projects\\MThree\\stockanalyzer_vanilla\\frontend\\test.html";
-        String relurl = "../../../../../../../../frontend/test.html";
-
         try {
             File htmlFile = new File("C:\\Users\\roger\\Documents\\Projects\\MThree\\stockanalyzer_vanilla\\frontend\\test.html");
+//              API Team, please replace the link once it's deployed on AWS
             Desktop.getDesktop().browse(htmlFile.toURI());
         } catch (Exception ex) {
             System.err.println("wrong path");

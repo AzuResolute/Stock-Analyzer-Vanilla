@@ -1,6 +1,21 @@
+// State
+let state = {
+  selection: null,
+  data: {
+    weekly: [],
+    daily: [],
+    intraday: []
+  }
+}
+
+// OnLoad
+
+
+
+// Renders
+
 let displayTable = data => {
   console.log(data);
-  
   if(typeof data === 'string'){
     console.log("csv path")
     csvToTable(data)
@@ -74,29 +89,22 @@ let renderDateTimeInput = () => {
     // Create min/max
   userinput.addEventListener('submit', e => {
     e.preventDefault();
-    console.log(`${e.target.selectedDateTime.value.replace("T"," ")}:00`)
     getSingleIntraday(`${e.target.selectedDateTime.value.replace("T"," ")}:00`);
   });
 };
 
+
+// Fetches
 let getAllWeekly = () => {
   fetch("http://localhost:4567/getWeekly")
-  .then(response => {
-    return response.text();
-  })
-  .then(csv => {
-    return displayTable(csv);
-  });
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
 };
 
 let getSingleWeekly = week => {
   fetch(`http://localhost:4567/getWeekly/${week}`)
-    .then(response => {
-      return response.text();
-    })
-    .then(csv => {
-      return displayTable(csv);
-    });
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
 };
 
 let getAllDaily = () => {
@@ -111,33 +119,46 @@ let getAllDaily = () => {
 
 let getSingleDaily = day => {
   fetch(`http://localhost:4567/getDaily/${day}`)
-    .then(response => {
-      return response.text();
-    })
-    .then(csv => {
-      return displayTable(csv);
-    });
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
 };
 
 let getAllIntraday = () => {
   fetch("http://localhost:4567/getIntraday")
-    .then(response => {
-      return response.text();
-    })
-    .then(csv => {
-      return displayTable(csv);
-    });
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
 };
 
 let getSingleIntraday = minute => {
   fetch(`http://localhost:4567/getIntraday/${minute}`)
-    .then(response => {
-      return response.text();
-    })
-    .then(csv => {
-      return displayTable(csv);
-    });
+    .then(response => response.text())
+    .then(csv => displayTable(csv));
 };
+
+// State Modification
+let loadFromCSV = (data, table) => {
+  data.split('\n')
+    .map(w => {
+        let x = w.split(/,\s/);
+        state.data[table].push({
+          date: x[0],
+          open: x[1],
+          high: x[2],
+          low: x[3],
+          close: x[4],
+          volume: x[5]
+        })
+        // return `<tr key=${x[0]}>
+        //     <td>${x[0]}</td>
+        //     <td>${Number(x[1]).toFixed(2)}</td>
+        //     <td>${Number(x[2]).toFixed(2)}</td>
+        //     <td>${Number(x[3]).toFixed(2)}</td>
+        //     <td>${Number(x[4]).toFixed(2)}</td>
+        //     <td>${Number(x[5]).toLocaleString()}</td>
+        // </tr>`;
+      }
+    )
+}
 
 
 // GET JSON

@@ -1,3 +1,5 @@
-let config = {
-    
-}
+let state = {
+    currentTable = {
+      
+    }
+  }
