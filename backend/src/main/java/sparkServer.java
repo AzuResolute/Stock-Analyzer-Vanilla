@@ -85,11 +85,11 @@ public class sparkServer {
             // Create Stream of "Expanded Stats"
             // Stores an enum of either daily, weekly, intraday
             // - Average for Duration
-            // - Moving Average (Intra is 30 mins,
+            // - Moving Average (Intra is 30 mins, Daily is last 5 days, Weekly is last month)
             // - Distance from Mean
             // - Volatility
             // - Capital Asset Pricing
-            // -
+
             return "stuff";
         });
 

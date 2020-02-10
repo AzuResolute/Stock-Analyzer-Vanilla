@@ -68,12 +68,11 @@ let state = {
         .toISOString()
         .replace("T", " ")
         .substring(0, 19)}`;
-
     }
   }
 }
 
-// Renders
+// RENDERS
 
 let renderHome = () => {
   let main = document.querySelector("#main");
