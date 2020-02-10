@@ -18,15 +18,55 @@ let state = {
     Daily: 'date',
     Intraday: 'datetime-local'
   },
-  // singleInputValidation: {
-  //   Weekly: '',
-  //   Daily: '',
-  //   Intraday: dt => {
-  //     if(Date.getHours(dt) )
-  //   }
-  // },
-  // Create Validation
-  mode: null
+  inputValidation: {
+    Weekly: d => {
+      let dformat = new Date(`${d} GMT-05:00`);
+      let day = dformat.getDay();
+      let dayDiff = new Date(Date.now()).getDate() - dformat.getDate();
+      if (day === 0) 
+        dformat.setDate(dformat.getDate() - 2);
+      else if (day === 6) 
+        dformat.setDate(dformat.getDate() - 1);
+      else if(!(dayDiff < 7)) 
+        dformat.setDate(dformat.getDate() + (5 - day))
+      
+      return dformat;
+    },
+    Daily: d => {
+      let dformat = new Date(`${d} GMT-05:00`);
+      let day = dformat.getDay();
+      if(day === 0)
+        dformat.setDate(dformat.getDate() - 2);
+      else if (day === 6) 
+        dformat.setDate(dformat.getDate() - 1);
+
+      return dformat;
+    },
+    Intraday: dt => {
+      let dformat = new Date(`${dt} GMT-05:00`);
+      let day = dformat.getDay();
+      let hour = dformat.getHours();
+      let minute = dformat.getMinutes();
+      
+      dformat.setMinutes(minute - (minute % 5))
+      
+      if(hour < 9 || (hour === 9 && minute < 35)) {
+        dformat.setHours(16)
+        dformat.setMinutes(0);
+        dformat.setDate(dformat.getDate() - 1)
+      } else if (hour > 16 || (hour === 16 && minute > 0)) {
+        dformat.setHours(16);
+        dformat.setMinutes(0);
+      }
+      
+      if(day === 0)
+        dformat.setDate(dformat.getDate() - 2);
+      else if (day === 6) 
+        dformat.setDate(dformat.getDate() - 1);
+
+      return dformat;
+    }
+  }
 }
 
 // Renders
@@ -109,7 +149,6 @@ let armSubmit = mode => {
   userinput.addEventListener('submit', e => {
     e.preventDefault();
     let input = mode !== 'Intraday' ? e.target.param.value : `${e.target.param.value.replace("T"," ")}:00`;
-    console.log(input)
     let data = state.data[mode].find(w => w.date === input);
     renderSingleInputTable(mode, data);
   });
@@ -199,3 +238,43 @@ getAllDataCSV();
 //       </tr>`
 //     ).join("");
 // };
+
+// DATETIME TESTS
+
+console.log(state.inputValidation.Weekly("2020-01-21"));
+console.log(state.inputValidation.Daily("2020-01-21"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-22"));
+console.log(state.inputValidation.Daily("2020-01-22"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-23"));
+console.log(state.inputValidation.Daily("2020-01-23"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-24"));
+console.log(state.inputValidation.Daily("2020-01-24"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-25"));
+console.log(state.inputValidation.Daily("2020-01-25"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-26"));
+console.log(state.inputValidation.Daily("2020-01-26"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-27"));
+console.log(state.inputValidation.Daily("2020-01-27"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-28"));
+console.log(state.inputValidation.Daily("2020-01-28"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-29"));
+console.log(state.inputValidation.Daily("2020-01-29"));
+console.log(" --- ")
+console.log(state.inputValidation.Weekly("2020-01-30"));
+console.log(state.inputValidation.Daily("2020-01-30"));
+console.log(" --- ")
+console.log(state.inputValidation.Intraday("2020-02-12 16:00:00"));
+console.log(state.inputValidation.Intraday("2020-02-11 16:03:00"));
+console.log(state.inputValidation.Intraday("2020-02-10 20:45:00"));
+console.log(state.inputValidation.Intraday("2020-02-09 12:00:00"));
+console.log(state.inputValidation.Intraday("2020-02-08 04:00:00"));
+console.log(state.inputValidation.Intraday("2020-02-07 12:00:00"));
+console.log(state.inputValidation.Intraday("2020-02-06 03:00:00"));
