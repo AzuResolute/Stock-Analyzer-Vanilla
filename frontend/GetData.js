@@ -1,164 +1,176 @@
-// State
 let state = {
-  selection: null,
+  selection: {
+    Company: 'Microsoft',
+    Ticker: 'MSFT'
+  },
   data: {
-    weekly: [],
-    daily: [],
-    intraday: []
+    Weekly: [],
+    Daily: [],
+    Intraday: []
+  },
+  tableTitle: {
+    Weekly: 'Weekly Prices (open, high, low, close) and Volumes',
+    Daily: 'Daily Time Series with Splits and Dividend Events',
+    Intraday: 'Intraday (5min) open, high, low, close prices and volume'
+  },
+  singleInputType: {
+    Weekly: 'date',
+    Daily: 'date',
+    Intraday: 'datetime-local'
+  },
+  // singleInputValidation: {
+  //   Weekly: '',
+  //   Daily: '',
+  //   Intraday: dt => {
+  //     if(Date.getHours(dt) )
+  //   }
+  // },
+  // Create Validation
+  mode: null
+}
+
+// Renders
+
+let renderHome = () => {
+  let main = document.querySelector("#main");
+  main.innerHTML = `<h1 id="parameter" class="text-center">Welcome to the MThree Stock Analysis Application</h1>`;
+}
+
+let renderAllTable = mode => {
+  document.querySelector("#main").innerHTML = `
+  <h1 id="parameter" class="text-center">${state.tableTitle[mode]}</h1>
+  <table class="blueTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Volume</th>
+      </tr>
+    </thead>
+    <tbody id="results">
+    ${state.data[mode].map(w => `
+      <tr>
+        <td>${w.date}</td>
+        <td>${Number(w.open).toFixed(2)}</td>
+        <td>${Number(w.high).toFixed(2)}</td>
+        <td>${Number(w.low).toFixed(2)}</td>
+        <td>${Number(w.close).toFixed(2)}</td>
+        <td>${Number(w.volume).toLocaleString()}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+};
+
+let renderSingleInputForm = async mode => {
+  let inputType = state.singleInputType[mode]
+  let data = state.data[mode];
+  document.querySelector("#main").innerHTML =
+  `<h1 id="parameter" class="text-center">${mode} - Please select your parameters:</h1>
+  <div class="d-flex flex-column align-items-center">
+  <form id="userinput">
+    <input  type=${inputType}
+            name="param"
+            max=${data[0].date.replace(" ","T")}
+            min=${data[data.length - 1].date.replace(" ","T")}>
+    <input type="submit">
+  </form>
+  </div>`;
+};
+
+let renderSingleInputTable = (mode, data) => {
+  document.querySelector("#main").innerHTML = `
+  <h1 id="parameter" class="text-center">${state.tableTitle[mode]}</h1>
+  <table class="blueTable">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Figures</th>
+    </tr>
+  </thead>
+  <tbody id="results">
+  ${Object.keys(data).map(d => `
+    <tr>
+      <td>${d.toUpperCase()}</td>
+      ${d !== 'volume' ?
+      `<td>${data[d]}</td>` : 
+      `<td>${Number(data.volume).toLocaleString()}</td>`}
+    </tr>`).join('')}
+  </tbody>
+</table>`;
+}
+
+// Form Methods
+
+let armSubmit = mode => {
+  let userinput = document.querySelector("#userinput");
+  userinput.addEventListener('submit', e => {
+    e.preventDefault();
+    let input = mode !== 'Intraday' ? e.target.param.value : `${e.target.param.value.replace("T"," ")}:00`;
+    console.log(input)
+    let data = state.data[mode].find(w => w.date === input);
+    renderSingleInputTable(mode, data);
+  });
+};
+
+// Fetches
+
+// let getSingleWeekly = week => {
+//   fetch(`http://localhost:4567/getWeekly/${week}`)
+//   .then(response => response.text())
+//   .then(csv => displayTable(csv));
+// };
+
+// let getSingleDaily = day => {
+//   fetch(`http://localhost:4567/getDaily/${day}`)
+//   .then(response => response.text())
+//   .then(csv => displayTable(csv));
+// };
+
+// let getSingleIntraday = minute => {
+//   fetch(`http://localhost:4567/getIntraday/${minute}`)
+//     .then(response => response.text())
+//     .then(csv => displayTable(csv));
+// };
+
+let getAllDataCSV = () => {
+  fetch("http://localhost:4567/getWeekly")
+  .then(response => response.text())
+  .then(csv => loadFromCSV(csv, 'Weekly'));
+
+  fetch("http://localhost:4567/getDaily")
+  .then(response => response.text())
+  .then(csv => loadFromCSV(csv, 'Daily'));
+
+  fetch("http://localhost:4567/getIntraday")
+  .then(response => response.text())
+  .then(csv => loadFromCSV(csv, 'Intraday'));
+}
+
+// State Modification
+
+let loadFromCSV = (data, table) => {
+  data.split('\n')
+  .map(w => {
+    let x = w.split(/,\s/);
+    state.data[table].push({
+      date: x[0],
+      open: x[1],
+      high: x[2],
+      low: x[3],
+      close: x[4],
+      volume: x[5]
+    })
   }
+  );
+  console.log(state)
 }
 
 // OnLoad
 
-
-
-// Renders
-
-let displayTable = data => {
-  console.log(data);
-  if(typeof data === 'string'){
-    console.log("csv path")
-    csvToTable(data)
-  } else {
-    console.log("json path")
-    let mainDataKey = Object.keys(data)[1];
-    jsonToTable(data[mainDataKey]);
-    changeTitle(data["Meta Data"]["1. Information"]);
-  }
-};
-
-let changeTitle = title => {
-  document.getElementById("parameter").innerText = title;
-};
-
-let jsonToTable = data => {
-  let resultTable = document.getElementById("results");
-  resultTable.innerHTML = Object.entries(data)
-    .map(w =>
-      `<tr key=${w[0]}>
-          <td>${w[0]}</td>
-          <td>${Number(w[1]["1. open"]).toFixed(2)}</td>
-          <td>${Number(w[1]["2. high"]).toFixed(2)}</td>
-          <td>${Number(w[1]["3. low"]).toFixed(2)}</td>
-          <td>${Number(w[1]["4. close"]).toFixed(2)}</td>
-          <td>${Number(w[1]["5. volume"]).toLocaleString()}</td>
-      </tr>`
-    ).join("");
-};
-
-let csvToTable = data => {
-  let resultTable = document.getElementById("results");
-  resultTable.innerHTML = data.split('\n')
-    .map(w => {
-        let x = w.split(/,\s/);
-        return `<tr key=${x[0]}>
-            <td>${x[0]}</td>
-            <td>${Number(x[1]).toFixed(2)}</td>
-            <td>${Number(x[2]).toFixed(2)}</td>
-            <td>${Number(x[3]).toFixed(2)}</td>
-            <td>${Number(x[4]).toFixed(2)}</td>
-            <td>${Number(x[5]).toLocaleString()}</td>
-        </tr>`;
-      }
-    ).join("");
-  };
-
-let renderDateInput = datetype => {
-  let userinput = document.querySelector("#userinput")
-  userinput.innerHTML =
-  `Day Of Stock:
-  <input type="date" name="selectedDate">
-  <input type="submit">`;
-  // Create min/max
-  userinput.addEventListener('submit', e => {
-    e.preventDefault();
-    if(datetype === "weekly") {
-      getSingleWeekly(e.target.selectedDate.value);
-    } else if (datetype === 'daily') {
-      getSingleDaily(e.target.selectedDate.value);
-    }
-  });
-};
-
-let renderDateTimeInput = () => {
-  let userinput = document.querySelector("#userinput")
-  userinput.innerHTML =
-  `Day Of Stock:
-  <input type="datetime-local" name="selectedDateTime">
-  <input type="submit">`;
-    // Create min/max
-  userinput.addEventListener('submit', e => {
-    e.preventDefault();
-    getSingleIntraday(`${e.target.selectedDateTime.value.replace("T"," ")}:00`);
-  });
-};
-
-
-// Fetches
-let getAllWeekly = () => {
-  fetch("http://localhost:4567/getWeekly")
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getSingleWeekly = week => {
-  fetch(`http://localhost:4567/getWeekly/${week}`)
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getAllDaily = () => {
-  fetch("http://localhost:4567/getDaily")
-    .then(response => {
-      return response.text();
-    })
-    .then(csv => {
-      return displayTable(csv);
-    });
-};
-
-let getSingleDaily = day => {
-  fetch(`http://localhost:4567/getDaily/${day}`)
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getAllIntraday = () => {
-  fetch("http://localhost:4567/getIntraday")
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getSingleIntraday = minute => {
-  fetch(`http://localhost:4567/getIntraday/${minute}`)
-    .then(response => response.text())
-    .then(csv => displayTable(csv));
-};
-
-// State Modification
-let loadFromCSV = (data, table) => {
-  data.split('\n')
-    .map(w => {
-        let x = w.split(/,\s/);
-        state.data[table].push({
-          date: x[0],
-          open: x[1],
-          high: x[2],
-          low: x[3],
-          close: x[4],
-          volume: x[5]
-        })
-        // return `<tr key=${x[0]}>
-        //     <td>${x[0]}</td>
-        //     <td>${Number(x[1]).toFixed(2)}</td>
-        //     <td>${Number(x[2]).toFixed(2)}</td>
-        //     <td>${Number(x[3]).toFixed(2)}</td>
-        //     <td>${Number(x[4]).toFixed(2)}</td>
-        //     <td>${Number(x[5]).toLocaleString()}</td>
-        // </tr>`;
-      }
-    )
-}
+getAllDataCSV();
 
 
 // GET JSON
@@ -171,4 +183,19 @@ let loadFromCSV = (data, table) => {
 //     .then(myJson => {
 //       return displayTable(myJson);
 //     });
+// };
+
+// let jsonToTable = data => {
+//   let resultTable = document.getElementById("results");
+//   resultTable.innerHTML = Object.entries(data)
+//     .map(w =>
+//       `<tr key=${w[0]}>
+//           <td>${w[0]}</td>
+//           <td>${Number(w[1]["1. open"]).toFixed(2)}</td>
+//           <td>${Number(w[1]["2. high"]).toFixed(2)}</td>
+//           <td>${Number(w[1]["3. low"]).toFixed(2)}</td>
+//           <td>${Number(w[1]["4. close"]).toFixed(2)}</td>
+//           <td>${Number(w[1]["5. volume"]).toLocaleString()}</td>
+//       </tr>`
+//     ).join("");
 // };

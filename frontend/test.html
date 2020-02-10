@@ -59,6 +59,7 @@
       padding: 2px 8px;
       border-radius: 5px;
     }
+
   </style>
   <head>
     <meta charset="utf-8" />
@@ -81,9 +82,9 @@
               Get All Data
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" onclick="getAllIntraday()">Intraday</a>
-              <a class="dropdown-item" onclick="getAllDaily()">Daily</a>
-              <a class="dropdown-item" onclick="getAllWeekly()">Weekly</a>
+              <a class="dropdown-item" onclick="renderAllTable('Weekly')">Intraday</a>
+              <a class="dropdown-item" onclick="renderAllTable('Daily')">Daily</a>
+              <a class="dropdown-item" onclick="renderAllTable('Intraday')">Weekly</a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -91,9 +92,9 @@
               Get Single Data
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" onclick="renderDateTimeInput()">Intraday</a>
-              <a class="dropdown-item" onclick="renderDateInput('daily')">Daily</a>
-              <a class="dropdown-item" onclick="renderDateInput('weekly')">Weekly</a>
+              <a class="dropdown-item" onclick="renderSingleInputForm('Intraday'); armSubmit('Intraday')">Intraday</a>
+              <a class="dropdown-item" onclick="renderSingleInputForm('Daily'); armSubmit('Daily')">Daily</a>
+              <a class="dropdown-item" onclick="renderSingleInputForm('Weekly'); armSubmit('Weekly')">Weekly</a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -114,22 +115,8 @@
       </div>
     </nav>
 
-    <main>
-      <h1 id="parameter" class="text-center">No Data Selected</h1>
-      <form id="userinput"></form>
-      <table class="blueTable">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Open</th>
-            <th>High</th>
-            <th>Low</th>
-            <th>Close</th>
-            <th>Volume</th>
-          </tr>
-        </thead>
-        <tbody id="results"></tbody>
-      </table>
+    <main id="main">
+      <h1 id="parameter" class="text-center">Welcome to the MThree Stock Analysis Application</h1>
     </main>
     
 
