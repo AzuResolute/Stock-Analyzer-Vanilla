@@ -3,6 +3,7 @@ import com.google.gson.*;
 
 import java.awt.*;
 import java.io.File;
+import java.util.stream.Stream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,7 +14,6 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpClient;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class sparkServer {
     public static void main(String [] args){
@@ -49,7 +49,6 @@ public class sparkServer {
 
 
         get("/getWeekly/:week", (req, res) -> {
-                    getStock gs = new getStock();
                     String week = req.params(":week");
                     System.out.println("Week Selected: " + week);
                     String[] stringifiedArray = new Seed().WEEKLYSTRINGIFIED;
@@ -60,7 +59,6 @@ public class sparkServer {
         );
 
         get("/getDaily/:day", (req, res) -> {
-                    getStock gs = new getStock();
                     String day = req.params(":day");
                     System.out.println("Week Selected: " + day);
                     String[] stringifiedArray = new Seed().DAILYLYSTRINGIFIED;
@@ -71,7 +69,6 @@ public class sparkServer {
         );
 
         get("/getIntraday/:minute", (req, res) -> {
-                    getStock gs = new getStock();
                     String minute = req.params(":minute");
                     System.out.println("Minute Selected: " + minute);
                     String[] stringifiedArray = new Seed().INTRADAYSTRINGIFIED;

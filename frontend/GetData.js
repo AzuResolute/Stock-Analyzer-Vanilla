@@ -24,11 +24,8 @@ let state = {
       let day = dformat.getDay();
       if (day === 5 || d === state.data.Weekly[0].date)
         return d;
-      else if (day === 6) 
-        dformat.setDate(dformat.getDate() - 1);
-      else 
-        dformat.setDate(dformat.getDate() - (2 + day));
-      
+      dformat.setDate(dformat.getDate() - (day === 6 ? 1 : 2 + day));
+
       return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
                 .toISOString()
                 .split("T")[0]}`;
@@ -37,10 +34,10 @@ let state = {
       let dformat = new Date(`${d} GMT-05:00`);
       let day = dformat.getDay();
       if(day === 0)
-      dformat.setDate(dformat.getDate() - 2);
-      else if (day === 6) 
-      dformat.setDate(dformat.getDate() - 1);
-      
+        dformat.setDate(dformat.getDate() - 2);
+      else if (day === 6)
+        dformat.setDate(dformat.getDate() - 1);
+
       return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
         .toISOString()
         .split("T")[0]}`;
@@ -50,28 +47,28 @@ let state = {
       let day = dformat.getDay();
       let hour = dformat.getHours();
       let minute = dformat.getMinutes();
-      
+
       dformat.setMinutes(minute - (minute % 5))
-      
-      if(hour < 9 || (hour === 9 && minute < 35)) {
+
+      if(hour < 9 || hour === 9 && minute < 35) {
         dformat.setHours(16)
         dformat.setMinutes(0);
         dformat.setDate(dformat.getDate() - 1)
-      } else if (hour > 16 || (hour === 16 && minute > 0)) {
+      } else if (hour > 16 || hour === 16 && minute > 0) {
         dformat.setHours(16);
         dformat.setMinutes(0);
       }
-      
+
       if(day === 0)
         dformat.setDate(dformat.getDate() - 2);
-      else if (day === 6) 
+      else if (day === 6)
         dformat.setDate(dformat.getDate() - 1);
 
       return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
         .toISOString()
         .replace("T", " ")
         .substring(0, 19)}`;
-      
+
     }
   }
 }
@@ -142,7 +139,7 @@ let renderSingleInputTable = (mode, data) => {
     <tr>
       <td>${d.toUpperCase()}</td>
       ${d !== 'volume' ?
-      `<td>${data[d]}</td>` : 
+      `<td>${data[d]}</td>` :
       `<td>${Number(data.volume).toLocaleString()}</td>`}
     </tr>`).join('')}
   </tbody>
@@ -203,7 +200,7 @@ let armHistorical = () => {
     .xAxisLabel("Date")
     .xAxisFormat(britecharts.line().axisTimeCombinations.CUSTOM)
     .xAxisCustomFormat("%Y");
-    
+
   brushHistorical
     .width(containerWidth)
     .height(100)
