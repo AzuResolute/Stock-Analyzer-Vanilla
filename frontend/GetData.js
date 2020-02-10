@@ -153,7 +153,7 @@ let renderHistorical = () => {
   <div class="historical-volume-container border border-primary rounded"></div>`
 }
 
-// Dynamic Methods
+// DYNAMIC METHODS
 
 let armSubmit = mode => {
   let userinput = document.querySelector("#userinput");
@@ -194,18 +194,21 @@ let armHistorical = () => {
 
   lineHistorical
     .isAnimated(true)
+    .margin({bottom: 50})
     .grid('full')
     .width(containerWidth)
     .height(350)
-    .xAxisLabel("Date")
     .xAxisFormat(britecharts.line().axisTimeCombinations.CUSTOM)
-    .xAxisCustomFormat("%Y");
+    .xAxisCustomFormat("%m %Y")
+    .on('customMouseOver', chartTooltip.show)
+    .on('customMouseMove', chartTooltip.update)
+    .on('customMouseOut', chartTooltip.hide);
 
   brushHistorical
     .width(containerWidth)
     .height(100)
     .xAxisFormat(britecharts.brush().axisTimeCombinations.CUSTOM)
-    .xAxisCustomFormat("%Y")
+    .xAxisCustomFormat("%m %Y")
     .margin({top:0, bottom: 40, left: 50, right: 30})
     .on('customBrushEnd', ([brushStart, brushEnd]) => {
       if (brushStart && brushEnd) {
@@ -213,15 +216,18 @@ let armHistorical = () => {
         view.dataByTopic[0].dates = lineData.dataByTopic[0].dates.filter(w => (
           new Date(`${w.date} GMT-05:00`) > new Date(`${brushStart}`) &&
           new Date(`${w.date} GMT-05:00`) < new Date(`${brushEnd}`)
-          ))
-          linecontainer.datum(view).call(lineHistorical);
+        ))
+        linecontainer.datum(view).call(lineHistorical);
       }
   });
+
+  chartTooltip
+    
 
   linecontainer.datum(lineData).call(lineHistorical);
   volumecontainer.datum(volumeData).call(brushHistorical);
 
-  const tooltipContainer = d3.select('.historical-line-container .metadata-group ');
+  const tooltipContainer = d3.select('.historical-line-container .metadata-group .hover-marker');
   tooltipContainer.call(chartTooltip);
 
   const redrawHistorical = () => {
@@ -235,7 +241,7 @@ let armHistorical = () => {
 
 };
 
-// Fetches
+// FETCHES
 
 let getAllDataCSV = () => {
   fetch("http://localhost:4567/getWeekly")
@@ -269,7 +275,7 @@ let getAllDataCSV = () => {
 //     .then(csv => displayTable(csv));
 // };
 
-// State Modification
+// STATE MODIFICATION
 
 let loadFromCSV = (data, table) => {
   data.split('\n')
@@ -346,7 +352,7 @@ let dttests = () => {
   console.log(state.inputValidation.Intraday("2020-02-06 03:00:00"));
 };
 
-// OnLoad
+// ONLOAD
 
 let onLoad = async () => {
   await getAllDataCSV();

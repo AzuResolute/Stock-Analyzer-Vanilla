@@ -78,6 +78,21 @@ public class sparkServer {
                 }
         );
 
+        get("/recommendation", (req, res) -> {
+            // Seed -> SparkServer -> Parser -> Calculator (must construct calculator) -> SparkServer
+
+            // Parse string into records
+            // Create Stream of "Expanded Stats"
+            // Stores an enum of either daily, weekly, intraday
+            // - Average for Duration
+            // - Moving Average (Intra is 30 mins,
+            // - Distance from Mean
+            // - Volatility
+            // - Capital Asset Pricing
+            // -
+            return "stuff";
+        });
+
         before((req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "*");
