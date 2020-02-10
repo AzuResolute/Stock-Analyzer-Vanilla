@@ -22,25 +22,28 @@ let state = {
     Weekly: d => {
       let dformat = new Date(`${d} GMT-05:00`);
       let day = dformat.getDay();
-      let dayDiff = new Date(Date.now()).getDate() - dformat.getDate();
-      if (day === 0) 
-        dformat.setDate(dformat.getDate() - 2);
+      if (day === 5 || d === state.data.Weekly[0].date)
+        return d;
       else if (day === 6) 
         dformat.setDate(dformat.getDate() - 1);
-      else if(!(dayDiff < 7)) 
-        dformat.setDate(dformat.getDate() + (5 - day))
+      else 
+        dformat.setDate(dformat.getDate() - (2 + day));
       
-      return dformat;
+      return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0]}`;
     },
     Daily: d => {
       let dformat = new Date(`${d} GMT-05:00`);
       let day = dformat.getDay();
       if(day === 0)
-        dformat.setDate(dformat.getDate() - 2);
+      dformat.setDate(dformat.getDate() - 2);
       else if (day === 6) 
-        dformat.setDate(dformat.getDate() - 1);
-
-      return dformat;
+      dformat.setDate(dformat.getDate() - 1);
+      
+      return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
+        .toISOString()
+        .split("T")[0]}`;
     },
     Intraday: dt => {
       let dformat = new Date(`${dt} GMT-05:00`);
@@ -64,7 +67,11 @@ let state = {
       else if (day === 6) 
         dformat.setDate(dformat.getDate() - 1);
 
-      return dformat;
+      return `${new Date(dformat.getTime() - (dformat.getTimezoneOffset() * 60000 ))
+        .toISOString()
+        .replace("T", " ")
+        .substring(0, 19)}`;
+      
     }
   }
 }
@@ -156,23 +163,23 @@ let armSubmit = mode => {
 
 // Fetches
 
-// let getSingleWeekly = week => {
-//   fetch(`http://localhost:4567/getWeekly/${week}`)
-//   .then(response => response.text())
-//   .then(csv => displayTable(csv));
-// };
+let getSingleWeekly = week => {
+  fetch(`http://localhost:4567/getWeekly/${week}`)
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
+};
 
-// let getSingleDaily = day => {
-//   fetch(`http://localhost:4567/getDaily/${day}`)
-//   .then(response => response.text())
-//   .then(csv => displayTable(csv));
-// };
+let getSingleDaily = day => {
+  fetch(`http://localhost:4567/getDaily/${day}`)
+  .then(response => response.text())
+  .then(csv => displayTable(csv));
+};
 
-// let getSingleIntraday = minute => {
-//   fetch(`http://localhost:4567/getIntraday/${minute}`)
-//     .then(response => response.text())
-//     .then(csv => displayTable(csv));
-// };
+let getSingleIntraday = minute => {
+  fetch(`http://localhost:4567/getIntraday/${minute}`)
+    .then(response => response.text())
+    .then(csv => displayTable(csv));
+};
 
 let getAllDataCSV = () => {
   fetch("http://localhost:4567/getWeekly")
@@ -207,74 +214,70 @@ let loadFromCSV = (data, table) => {
   console.log(state)
 }
 
+// DATETIME TESTS
+let dttests = () => {
+  console.log(state.inputValidation.Weekly("2020-01-21"));
+  console.log(state.inputValidation.Daily("2020-01-21"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-22"));
+  console.log(state.inputValidation.Daily("2020-01-22"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-23"));
+  console.log(state.inputValidation.Daily("2020-01-23"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-24"));
+  console.log(state.inputValidation.Daily("2020-01-24"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-25"));
+  console.log(state.inputValidation.Daily("2020-01-25"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-26"));
+  console.log(state.inputValidation.Daily("2020-01-26"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-27"));
+  console.log(state.inputValidation.Daily("2020-01-27"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-28"));
+  console.log(state.inputValidation.Daily("2020-01-28"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-29"));
+  console.log(state.inputValidation.Daily("2020-01-29"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-30"));
+  console.log(state.inputValidation.Daily("2020-01-30"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-01-31"));
+  console.log(state.inputValidation.Daily("2020-01-31"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-02-01"));
+  console.log(state.inputValidation.Daily("2020-02-01"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-02-02"));
+  console.log(state.inputValidation.Daily("2020-02-02"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-02-03"));
+  console.log(state.inputValidation.Daily("2020-02-03"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-02-04"));
+  console.log(state.inputValidation.Daily("2020-02-04"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Weekly("2020-02-05"));
+  console.log(state.inputValidation.Daily("2020-02-05"));
+  console.log(" --- ")
+  console.log(state.inputValidation.Intraday("2020-02-12 16:00:00"));
+  console.log(state.inputValidation.Intraday("2020-02-11 16:03:00"));
+  console.log(state.inputValidation.Intraday("2020-02-10 20:45:00"));
+  console.log(state.inputValidation.Intraday("2020-02-09 12:00:00"));
+  console.log(state.inputValidation.Intraday("2020-02-08 04:00:00"));
+  console.log(state.inputValidation.Intraday("2020-02-07 12:00:00"));
+  console.log(state.inputValidation.Intraday("2020-02-06 03:00:00"));
+};
+
 // OnLoad
 
-getAllDataCSV();
+let onLoad = async () => {
+  await getAllDataCSV();
+  // setTimeout(dttests, 3000);
+};
 
-
-// GET JSON
-
-// let getAllDaily = () => {
-//   fetch("http://localhost:4567/getDaily")
-//     .then(response => {
-//       return response.json();
-//     })
-//     .then(myJson => {
-//       return displayTable(myJson);
-//     });
-// };
-
-// let jsonToTable = data => {
-//   let resultTable = document.getElementById("results");
-//   resultTable.innerHTML = Object.entries(data)
-//     .map(w =>
-//       `<tr key=${w[0]}>
-//           <td>${w[0]}</td>
-//           <td>${Number(w[1]["1. open"]).toFixed(2)}</td>
-//           <td>${Number(w[1]["2. high"]).toFixed(2)}</td>
-//           <td>${Number(w[1]["3. low"]).toFixed(2)}</td>
-//           <td>${Number(w[1]["4. close"]).toFixed(2)}</td>
-//           <td>${Number(w[1]["5. volume"]).toLocaleString()}</td>
-//       </tr>`
-//     ).join("");
-// };
-
-// DATETIME TESTS
-
-console.log(state.inputValidation.Weekly("2020-01-21"));
-console.log(state.inputValidation.Daily("2020-01-21"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-22"));
-console.log(state.inputValidation.Daily("2020-01-22"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-23"));
-console.log(state.inputValidation.Daily("2020-01-23"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-24"));
-console.log(state.inputValidation.Daily("2020-01-24"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-25"));
-console.log(state.inputValidation.Daily("2020-01-25"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-26"));
-console.log(state.inputValidation.Daily("2020-01-26"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-27"));
-console.log(state.inputValidation.Daily("2020-01-27"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-28"));
-console.log(state.inputValidation.Daily("2020-01-28"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-29"));
-console.log(state.inputValidation.Daily("2020-01-29"));
-console.log(" --- ")
-console.log(state.inputValidation.Weekly("2020-01-30"));
-console.log(state.inputValidation.Daily("2020-01-30"));
-console.log(" --- ")
-console.log(state.inputValidation.Intraday("2020-02-12 16:00:00"));
-console.log(state.inputValidation.Intraday("2020-02-11 16:03:00"));
-console.log(state.inputValidation.Intraday("2020-02-10 20:45:00"));
-console.log(state.inputValidation.Intraday("2020-02-09 12:00:00"));
-console.log(state.inputValidation.Intraday("2020-02-08 04:00:00"));
-console.log(state.inputValidation.Intraday("2020-02-07 12:00:00"));
-console.log(state.inputValidation.Intraday("2020-02-06 03:00:00"));
+onLoad();
