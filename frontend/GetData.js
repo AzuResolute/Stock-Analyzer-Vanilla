@@ -149,7 +149,12 @@ let renderSingleInputTable = (mode, data) => {
 </table>`;
 }
 
-// Form Methods
+let renderHistorical = () => {
+  document.querySelector("#main").innerHTML = `
+  <div class="historical-container"></div>`
+}
+
+// Dynamic Methods
 
 let armSubmit = mode => {
   let userinput = document.querySelector("#userinput");
@@ -160,6 +165,60 @@ let armSubmit = mode => {
     let data = state.data[mode].find(w => w.date === input);
     renderSingleInputTable(mode, data);
   });
+};
+
+let armHistorical = () => {
+  const lineData = {
+    "dataByTopic": [
+        {
+            "topic": -1,
+            "topicName": "Vivid",
+            "dates": [
+                {
+                    "value": 0,
+                    "date": "2016-08-01T00:00:00-07:00"
+                },
+                {
+                    "value": 3,
+                    "date": "2016-08-02T00:00:00-07:00"
+                }
+            ]
+        }
+    ]
+};
+
+  const container = d3.select('.historical-container');
+  const containerWidth = container.node().getBoundingClientRect().width;
+  const historical = britecharts.line();
+
+  historical
+    // .isAnimated(true)
+    // .aspectRatio(0.5)
+    // .grid('horizontal')
+    // .tooltipThreshold(600)
+    .width(containerWidth)
+    .margin({bottom: 50})
+    .height(400)
+ 
+    // .on('customMouseOver', chartTooltip.show)
+    // .on('customMouseMove', chartTooltip.update)
+    // .on('customMouseOut', chartTooltip.hide);
+
+    container.datum(lineData).call(historical);
+
+  //   const redrawHistorical = () => {
+  //     const newContainerWidth = container.node() ? container.node().getBoundingClientRect().width : false;
+  
+  //     // Setting the new width on the chart
+  //     historical.width(newContainerWidth);
+  
+  //     // Rendering the chart again
+  //     console.log("resizing")
+  //     container.call(historical);
+  // };
+  // const throttledRedraw = _.throttle(redrawHistorical, 200);
+  
+  // window.addEventListener("resize", throttledRedraw);
 };
 
 // Fetches
