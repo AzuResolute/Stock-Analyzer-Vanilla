@@ -156,30 +156,13 @@ let armSubmit = mode => {
   userinput.addEventListener('submit', e => {
     e.preventDefault();
     let input = mode !== 'Intraday' ? e.target.param.value : `${e.target.param.value.replace("T"," ")}:00`;
+    input = state.inputValidation[mode](input);
     let data = state.data[mode].find(w => w.date === input);
     renderSingleInputTable(mode, data);
   });
 };
 
 // Fetches
-
-let getSingleWeekly = week => {
-  fetch(`http://localhost:4567/getWeekly/${week}`)
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getSingleDaily = day => {
-  fetch(`http://localhost:4567/getDaily/${day}`)
-  .then(response => response.text())
-  .then(csv => displayTable(csv));
-};
-
-let getSingleIntraday = minute => {
-  fetch(`http://localhost:4567/getIntraday/${minute}`)
-    .then(response => response.text())
-    .then(csv => displayTable(csv));
-};
 
 let getAllDataCSV = () => {
   fetch("http://localhost:4567/getWeekly")
@@ -194,6 +177,24 @@ let getAllDataCSV = () => {
   .then(response => response.text())
   .then(csv => loadFromCSV(csv, 'Intraday'));
 }
+
+// let getSingleWeekly = week => {
+//   fetch(`http://localhost:4567/getWeekly/${week}`)
+//   .then(response => response.text())
+//   .then(csv => displayTable(csv));
+// };
+
+// let getSingleDaily = day => {
+//   fetch(`http://localhost:4567/getDaily/${day}`)
+//   .then(response => response.text())
+//   .then(csv => displayTable(csv));
+// };
+
+// let getSingleIntraday = minute => {
+//   fetch(`http://localhost:4567/getIntraday/${minute}`)
+//     .then(response => response.text())
+//     .then(csv => displayTable(csv));
+// };
 
 // State Modification
 
@@ -211,7 +212,6 @@ let loadFromCSV = (data, table) => {
     })
   }
   );
-  console.log(state)
 }
 
 // DATETIME TESTS
