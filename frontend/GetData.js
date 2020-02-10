@@ -151,7 +151,9 @@ let renderSingleInputTable = (mode, data) => {
 
 let renderHistorical = () => {
   document.querySelector("#main").innerHTML = `
-  <div class="historical-container"></div>`
+  <h1 id="parameter" class="text-center">Historical Stock Price for ${state.selection.Company}</h1>
+  <div class="historical-line-container border border-primary rounded"></div>
+  <div class="historical-volume-container border border-primary rounded"></div>`
 }
 
 // Dynamic Methods
@@ -169,56 +171,49 @@ let armSubmit = mode => {
 
 let armHistorical = () => {
   const lineData = {
-    "dataByTopic": [
+    dataByTopic: [
         {
-            "topic": -1,
-            "topicName": "Vivid",
-            "dates": [
-                {
-                    "value": 0,
-                    "date": "2016-08-01T00:00:00-07:00"
-                },
-                {
-                    "value": 3,
-                    "date": "2016-08-02T00:00:00-07:00"
-                }
-            ]
-        }
+            topic: `Historical Data of ${state.selection.Company}`,
+            topicName: "Stock Price",
+            dates: state.data.Weekly.map(w => {
+              return {
+                  date: new Date(`${w.date} GMT-05:00`),
+                  value: w.close
+              }
+        })
+      }
     ]
 };
 
-  const container = d3.select('.historical-container');
-  const containerWidth = container.node().getBoundingClientRect().width;
+  const linecontainer = d3.select('.historical-line-container');
+  const volumecontainer = d3.select('.historical-volume-container');
+  const containerWidth = linecontainer.node().getBoundingClientRect().width;
   const historical = britecharts.line();
+  const chartTooltip = britecharts.tooltip();
 
   historical
-    // .isAnimated(true)
-    // .aspectRatio(0.5)
-    // .grid('horizontal')
-    // .tooltipThreshold(600)
+    .isAnimated(true)
+    .grid('full')
     .width(containerWidth)
-    .margin({bottom: 50})
     .height(400)
- 
-    // .on('customMouseOver', chartTooltip.show)
-    // .on('customMouseMove', chartTooltip.update)
-    // .on('customMouseOut', chartTooltip.hide);
+    .xAxisLabel("Date")
+    .xAxisFormat(britecharts.line().axisTimeCombinations.CUSTOM)
+    .xAxisCustomFormat("%Y")
 
-    container.datum(lineData).call(historical);
+    linecontainer.datum(lineData).call(historical);
 
-  //   const redrawHistorical = () => {
-  //     const newContainerWidth = container.node() ? container.node().getBoundingClientRect().width : false;
-  
-  //     // Setting the new width on the chart
-  //     historical.width(newContainerWidth);
-  
-  //     // Rendering the chart again
-  //     console.log("resizing")
-  //     container.call(historical);
-  // };
-  // const throttledRedraw = _.throttle(redrawHistorical, 200);
-  
-  // window.addEventListener("resize", throttledRedraw);
+    const tooltipContainer = d3.select('.historical-line-container .metadata-group ');
+    tooltipContainer.call(chartTooltip);
+
+    const redrawHistorical = () => {
+      const newContainerWidth = linecontainer.node() ? linecontainer.node().getBoundingClientRect().width : false;
+      historical.width(newContainerWidth);
+      linecontainer.call(historical);
+    };
+    const throttledRedraw = _.throttle(redrawHistorical, 200);
+
+    window.addEventListener("resize", throttledRedraw);
+
 };
 
 // Fetches
