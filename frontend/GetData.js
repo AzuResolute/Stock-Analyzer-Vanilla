@@ -173,46 +173,72 @@ let armHistorical = () => {
   const lineData = {
     dataByTopic: [
         {
-            topic: `Historical Data of ${state.selection.Company}`,
-            topicName: "Stock Price",
-            dates: state.data.Weekly.map(w => {
-              return {
-                  date: new Date(`${w.date} GMT-05:00`),
-                  value: w.close
-              }
-        })
+          topic: `Historical Data of ${state.selection.Company}`,
+          topicName: "Stock Price",
+          dates: state.data.Weekly.map(w => ({
+            value: w.close,
+            date: new Date(`${w.date} GMT-05:00`)
+        }))
       }
     ]
-};
+  };
+
+  const volumeData = state.data.Weekly.map(w => ({
+    value: w.close,
+    date: new Date(`${w.date} GMT-05:00`)
+  }))
 
   const linecontainer = d3.select('.historical-line-container');
   const volumecontainer = d3.select('.historical-volume-container');
   const containerWidth = linecontainer.node().getBoundingClientRect().width;
-  const historical = britecharts.line();
+  const lineHistorical = britecharts.line();
+  const brushHistorical = britecharts.brush();
   const chartTooltip = britecharts.tooltip();
 
-  historical
+  lineHistorical
     .isAnimated(true)
     .grid('full')
     .width(containerWidth)
-    .height(400)
+    .height(350)
     .xAxisLabel("Date")
     .xAxisFormat(britecharts.line().axisTimeCombinations.CUSTOM)
+    .xAxisCustomFormat("%Y");
+    
+  brushHistorical
+    .width(containerWidth)
+    .height(100)
+    .xAxisFormat(britecharts.brush().axisTimeCombinations.CUSTOM)
     .xAxisCustomFormat("%Y")
+    .margin({top:0, bottom: 40, left: 50, right: 30})
+    .on('customBrushEnd', ([brushStart, brushEnd]) => {
+      if (brushStart && brushEnd) {
+        let view = JSON.parse(JSON.stringify(lineData));
+        view.dataByTopic[0].dates = lineData.dataByTopic[0].dates.filter(w => (
+          new Date(`${w.date} GMT-05:00`) > new Date(`${brushStart}`) &&
+          new Date(`${w.date} GMT-05:00`) < new Date(`${brushEnd}`)
+          ))
+          // let filteredLineData = filterData(brushStart, brushEnd);
+          console.log(brushStart)
+          console.log(brushEnd)
+          console.log(view)
+          linecontainer.datum(view).call(lineHistorical);
+      }
+  });
 
-    linecontainer.datum(lineData).call(historical);
+  linecontainer.datum(lineData).call(lineHistorical);
+  volumecontainer.datum(volumeData).call(brushHistorical);
 
-    const tooltipContainer = d3.select('.historical-line-container .metadata-group ');
-    tooltipContainer.call(chartTooltip);
+  const tooltipContainer = d3.select('.historical-line-container .metadata-group ');
+  tooltipContainer.call(chartTooltip);
 
-    const redrawHistorical = () => {
-      const newContainerWidth = linecontainer.node() ? linecontainer.node().getBoundingClientRect().width : false;
-      historical.width(newContainerWidth);
-      linecontainer.call(historical);
-    };
-    const throttledRedraw = _.throttle(redrawHistorical, 200);
+  const redrawHistorical = () => {
+    const newContainerWidth = linecontainer.node() ? linecontainer.node().getBoundingClientRect().width : false;
+    lineHistorical.width(newContainerWidth);
+    linecontainer.call(lineHistorical);
+  };
+  const throttledRedraw = _.throttle(redrawHistorical, 200);
 
-    window.addEventListener("resize", throttledRedraw);
+  window.addEventListener("resize", throttledRedraw);
 
 };
 
