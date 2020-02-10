@@ -217,10 +217,6 @@ let armHistorical = () => {
           new Date(`${w.date} GMT-05:00`) > new Date(`${brushStart}`) &&
           new Date(`${w.date} GMT-05:00`) < new Date(`${brushEnd}`)
           ))
-          // let filteredLineData = filterData(brushStart, brushEnd);
-          console.log(brushStart)
-          console.log(brushEnd)
-          console.log(view)
           linecontainer.datum(view).call(lineHistorical);
       }
   });
