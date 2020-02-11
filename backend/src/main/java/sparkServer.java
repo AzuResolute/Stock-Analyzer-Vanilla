@@ -3,6 +3,7 @@ import com.google.gson.*;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -47,6 +48,17 @@ public class sparkServer {
                 }
         );
 
+        get("/getIntraday/tradealgo/:day", (req, res) -> {
+                    String day = req.params(":day");
+                    System.out.println("Week Selected: " + day);
+                    String csv = "Date,Open,High,Low,Close,Volume\n";
+                    List<String> resultArr = Stream.of(new Seed().INTRADAYSTRINGIFIED).filter(w -> w.contains(day)).collect(Collectors.toList());
+                    String result = String.join("\n", resultArr).replaceAll(", ", ",").replaceAll(" ","T");
+                    System.out.println(csv + result);
+                    return (csv + result);
+                }
+        );
+
 
         get("/getWeekly/:week", (req, res) -> {
                     String week = req.params(":week");
@@ -77,21 +89,6 @@ public class sparkServer {
                     return result;
                 }
         );
-
-        get("/recommendation", (req, res) -> {
-            // Seed -> SparkServer -> Parser -> Calculator (must construct calculator) -> SparkServer
-
-            // Parse string into records
-            // Create Stream of "Expanded Stats"
-            // Stores an enum of either daily, weekly, intraday
-            // - Average for Duration
-            // - Moving Average (Intra is 30 mins, Daily is last 5 days, Weekly is last month)
-            // - Distance from Mean
-            // - Volatility
-            // - Capital Asset Pricing
-
-            return "stuff";
-        });
 
         before((req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");

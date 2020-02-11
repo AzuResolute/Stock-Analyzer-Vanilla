@@ -68,20 +68,12 @@ let state = {
         .toISOString()
         .replace("T", " ")
         .substring(0, 19)}`;
+
     }
-  },
-  specStats: {
-    Intraday: [
-      {
-        "30SMA": () => {
-          
-        }
-      }
-    ]
   }
 }
 
-// RENDERS
+// Renders
 
 let renderHome = () => {
   let main = document.querySelector("#main");
@@ -198,11 +190,9 @@ let armHistorical = () => {
   const containerWidth = linecontainer.node().getBoundingClientRect().width;
   const lineHistorical = britecharts.line();
   const brushHistorical = britecharts.brush();
-  const chartTooltip = britecharts.tooltip();
 
   lineHistorical
     .isAnimated(true)
-    .margin({bottom: 50})
     .grid('full')
     .width(containerWidth)
     .height(350)
@@ -229,14 +219,12 @@ let armHistorical = () => {
       }
   });
 
-  chartTooltip
-    
 
   linecontainer.datum(lineData).call(lineHistorical);
   volumecontainer.datum(volumeData).call(brushHistorical);
 
-  const tooltipContainer = d3.select('.historical-line-container .metadata-group .hover-marker');
-  tooltipContainer.call(chartTooltip);
+  // const tooltipContainer = d3.select('.historical-line-container .metadata-group .');
+  // tooltipContainer.call(chartTooltip);
 
   const redrawHistorical = () => {
     const newContainerWidth = linecontainer.node() ? linecontainer.node().getBoundingClientRect().width : false;

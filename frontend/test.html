@@ -78,6 +78,12 @@
     <script src="https://cdn.jsdelivr.net/npm/britecharts@2.10.0/dist/umd/brush.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/britecharts@2.10.0/dist/umd/tooltip.min.js" type="text/javascript"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.8.3/polyfill.min.js"></script>
+    <script src="https://unpkg.com/custom-event-polyfill@0.3.0/custom-event-polyfill.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/document-register-element/1.8.0/document-register-element.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https:////unpkg.com/d3@5.5.0"></script>
+    <script src="https:////unpkg.com/d3fc@14.0.41"></script>
   </head>
 
   <body class="d-flex flex-column">
@@ -116,18 +122,17 @@
             </div>
           </li>
         </ul>
-        <!-- <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form> -->
       </div>
     </nav>
 
-    <main id="main" class="d-flex flex-column align-items-center">
+    <main id="main">
       <h1 id="parameter" class="text-center">Welcome to the Stock Analysis Application</h1>
       <img src="logo.png" alt="logo" height="200" width="200"/>
+      <div id='day-trade' style='height: 500px'></div>
     </main>
+
     
     <script src="GetData.js"></script>
+    <script src="DayTrade.js"></script>
   </body>
 </html>
