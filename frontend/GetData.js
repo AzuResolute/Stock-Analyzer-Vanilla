@@ -69,6 +69,15 @@ let state = {
         .replace("T", " ")
         .substring(0, 19)}`;
     }
+  },
+  specStats: {
+    Intraday: [
+      {
+        "30SMA": () => {
+          
+        }
+      }
+    ]
   }
 }
 
